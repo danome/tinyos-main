@@ -7,16 +7,14 @@ implementation{
   components ReceiverC as App;
   components ActiveMessageC;
   components SerialActiveMessageC;
-  
 
   App.Boot -> MainC.Boot;
   App.Leds ->LedsC.Leds;
   App.Packet -> SerialActiveMessageC;
-  App.AMSend -> SerialActiveMessageC.AMSend[AM_SUM_MSG];   //串口发送数据
-  App.Receive -> ActiveMessageC.Receive[AM_TEMPERATURE_MSG];       //无线接受数据
-  App.RadioControl -> ActiveMessageC;       //开启无线电通信
-  App.SerialControl -> SerialActiveMessageC;   //开启串口通信
-   
+  App.AMSend -> SerialActiveMessageC.AMSend[AM_SUM_MSG];
+  App.Receive -> ActiveMessageC.Receive[AM_TEMPERATURE_MSG];
+  App.RadioControl -> ActiveMessageC;
+  App.SerialControl -> SerialActiveMessageC;
 
   components new CC2420SpiC() as Spi;
   App.CC2420Register -> Spi.CC2420Register;
