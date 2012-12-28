@@ -17,6 +17,9 @@ implementation{
   App.SerialControl -> SerialActiveMessageC;
 
   components new CC2420SpiC() as Spi;
-  App.CC2420Register -> Spi.CC2420Register;
-  App.CC2420Strobe -> Spi.CC2420Strobe;
+  App.MANOR    -> Spi.MANOR;
+  App.TOPTST   -> Spi.TOPTST;
+  App.MDMCTRL1 -> Spi.MDMCTRL1;
+  App.DACTST   -> Spi.DACTST;
+  App.STXON    -> Spi.STXON;
 }
