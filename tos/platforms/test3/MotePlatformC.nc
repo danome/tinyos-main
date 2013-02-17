@@ -1,0 +1,32 @@
+module MotePlatformC {
+  provides interface Init;
+}
+implementation {
+  command error_t Init.init() {
+    //LEDS
+    TOSH_SET_RED_LED_PIN();
+    TOSH_SET_GREEN_LED_PIN();
+    TOSH_SET_YELLOW_LED_PIN();
+    TOSH_MAKE_RED_LED_OUTPUT();
+    TOSH_MAKE_GREEN_LED_OUTPUT();
+    TOSH_MAKE_YELLOW_LED_OUTPUT();
+
+    //RADIO PINS
+    //CC2520 pins
+    TOSH_MAKE_SOMI_INPUT();
+    TOSH_MAKE_SIMO_INPUT();
+    TOSH_MAKE_UCLK_INPUT();
+    TOSH_SET_RADIO_RSTN_PIN();
+    TOSH_MAKE_RADIO_RSTN_OUTPUT();
+    TOSH_CLR_RADIO_VREN_PIN();
+    TOSH_MAKE_RADIO_VREN_OUTPUT();
+    TOSH_SET_RADIO_CSN_PIN();
+    TOSH_MAKE_RADIO_CSN_OUTPUT();
+    TOSH_MAKE_RADIO_FIFOP_INPUT();
+    TOSH_MAKE_RADIO_SFD_INPUT();
+
+    TOSH_SET_PIN_DIRECTIONS();
+
+    return SUCCESS;
+  }
+}

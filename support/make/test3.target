@@ -1,0 +1,23 @@
+# copied from z1.target
+
+PLATFORM = test3
+
+# MSP_BSL ?= tos-bsl
+# MOTELIST ?= motelist
+
+MSP_BSL_FLAGS = --test3
+MSP_MCU ?= msp430f2618
+MSP_GCC ?= msp430-gcc
+MSP_NESC_TARGET ?= msp430
+
+# VOLUME_FILE = volumes-stm25p.xml
+# VOLUME_ALLOCATOR ?= tos-storage-stm25p
+
+ifdef CC2520_CHANNEL
+PFLAGS += -DCC2520_DEF_CHANNEL=$(CC2520_CHANNEL)
+endif
+
+$(call TOSMake_include_platform,msp)
+
+test3: $(BUILD_DEPS)
+	@:

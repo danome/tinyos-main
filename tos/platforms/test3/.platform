@@ -1,0 +1,36 @@
+push( @includes, qw(
+  %T/platforms/test3
+  %T/platforms/test3/chips/msp430
+  %T/platforms/test3/chips/msp430/adc12
+  %T/platforms/test3/chips/msp430/usci
+  %T/platforms/test3/chips/msp430/timer
+  %T/platforms/test3/chips/cc2520
+  %T/chips/msp430
+  %T/chips/msp430/x2xxx
+  %T/chips/msp430/x2xxx/usci
+  %T/chips/msp430/adc12
+  %T/chips/msp430/dma
+  %T/chips/msp430/pins
+  %T/chips/msp430/timer
+  %T/chips/msp430/sensors
+  %T/chips/cc2520
+  %T/lib/timer
+  %T/lib/serial
+  %T/lib/power
+  %T/lib/rfxlink/layers
+  %T/lib/rfxlink/util
+  %T/lib/diagmsg
+) );
+
+@opts = qw(
+  -gcc=msp430-gcc
+  -fnesc-target=msp430
+  -fnesc-no-debug
+  -fnesc-scheduler=TinySchedulerC,TinySchedulerC.TaskBasic,TaskBasic,TaskBasic,runTask,postTask
+);
+
+if (`msp430-gcc --version | grep 3.2.3`){
+  push (@opts, "-mmcu=msp430x2618", "-mdisable-hwmul");
+} else {
+  push (@opts, "-mmcu=msp430f2618");
+}
