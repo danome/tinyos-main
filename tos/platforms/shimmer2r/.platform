@@ -47,6 +47,7 @@ push( @includes, qw(
   %T/chips/cc2420/security
   %T/chips/msp430
   %T/chips/msp430/adc12
+  %T/chips/msp430/dac12
   %T/chips/msp430/dma
   %T/chips/msp430/pins
   %T/chips/msp430/timer
