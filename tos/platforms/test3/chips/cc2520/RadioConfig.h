@@ -66,7 +66,8 @@ typedef uint16_t tradio_size;
  *
  * Removed three '0s because of overflow...
  */
-#define RADIO_ALARM_MICROSEC    (48000UL / 2 / 1000)
+//#define RADIO_ALARM_MICROSEC    (48000UL / 2 / 1000)
+#define RADIO_ALARM_MICROSEC    1
 
 enum cc2520_timing_enums {
   CC2520_SYMBOL_TIME = 16 * RADIO_ALARM_MICROSEC, // 16us
@@ -78,8 +79,7 @@ enum cc2520_timing_enums {
 /**
  * The base two logarithm of the number of radio alarm ticks per one millisecond
  */
-// FIXME: this needs to be calibrated
-#define RADIO_ALARM_MILLI_EXP	(5)
+#define RADIO_ALARM_MILLI_EXP	10
 
 /**
  * Make PACKET_LINK automaticaly enabled for Ieee154MessageC
