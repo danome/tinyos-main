@@ -66,7 +66,7 @@ typedef uint16_t tradio_size;
  *
  * Removed three '0s because of overflow...
  */
-#define RADIO_ALARM_MICROSEC    48000 / 2 / 1000
+#define RADIO_ALARM_MICROSEC    (48000UL / 2 / 1000)
 
 enum cc2520_timing_enums {
   CC2520_SYMBOL_TIME = 16 * RADIO_ALARM_MICROSEC, // 16us
