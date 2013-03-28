@@ -73,14 +73,16 @@ implementation {
   /**
    * Sets the reference voltage source.  If you select FALSE for Vref+, the
    * ADC reference voltage generator must be enabled and configured.
-   * 
+   * If VRef+ (internal ADC reference) is selected, it is turned on.
    * @param veRefPlus TRUE for VeRef+, FALSE for Vref+. 
    */
   command void HplMsp430Dac12.useVeRefVoltageSource(bool veRefPlus) { 
     if(veRefPlus)
       DAC12_CTL |= DAC12SREF_2;
-    else
+    else{
       DAC12_CTL &= ~DAC12SREF_2;
+      ADC12CTL0 = REFON + REF2_5V;
+    }      
   }
   
   /**
