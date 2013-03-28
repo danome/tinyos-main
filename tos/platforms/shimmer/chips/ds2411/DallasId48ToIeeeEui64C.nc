@@ -8,6 +8,7 @@ module DallasId48ToIeeeEui64C {
   command ieee_eui64_t LocalIeeeEui64.getId() {
     uint8_t id[6];
     ieee_eui64_t eui;
+    memset(id, 0, 6);  // just to avoid compiler warning
     call IDChip.read(id);
 
     eui.data[0] = IEEE_EUI64_COMPANY_ID_0;
