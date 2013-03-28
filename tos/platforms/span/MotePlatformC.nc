@@ -41,6 +41,7 @@ implementation {
     //LEDS
     TOSH_MAKE_GREEN_LED_OUTPUT();
     TOSH_SEL_GREEN_LED_IOFUNC();
+    TOSH_SET_GREEN_LED_PIN();
 
     //RADIO PINS
     //CC2420 pins
