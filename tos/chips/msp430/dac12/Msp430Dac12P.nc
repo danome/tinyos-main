@@ -69,8 +69,6 @@ implementation {
     call HplDac.setDac12Amp(DAC12_AMP_LOW_LOW);
     post calibDac();
 
-    ADC12CTL0 = REFON + REF2_5V;
-
     return SUCCESS;
   }
 
