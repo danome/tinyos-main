@@ -59,7 +59,11 @@
  * wired into the Platform's PeripheralInit.  When the platform runs
  * PlatformInit, PeripheralInit will be invoked and any timer module
  * that is wired in will have its Init block executed.  This will turn
- * on the appropriate NVIC enable.
+ * on the appropriate NVIC enable.  The wrap IE (TAx->CTL.TAIE) is turned
+ * on at the same time.  The assumption is that someone wants the wrap
+ * interrupt.  Not a great assumption but it is what has been done
+ * before on the msp430 platforms.  This will change when Msp432Timing
+ * is implemented.
  *
  * We rely exclusively on the IEs to control interrupts on a h/w block
  * basis.
@@ -68,6 +72,17 @@
  * IRQn ofr the TAn_0_IRQn.  We have to enable both the TAn_0 and TAn_N
  * Vectors.  We assume that TAn_N_IRQn is TAn_0_IRQn + 1.
  */
+
+#include <panic.h>
+
+#ifndef PANIC_TIMING
+
+enum {
+  __panic_timing = unique(UQ_PANIC_SUBSYS)
+};
+
+#define PANIC_TIMING __panic_timing
+#endif
 
 generic module Msp432TimerP(uint32_t timer_ptr, uint32_t irqn, bool isAsync) {
   provides {
@@ -79,11 +94,15 @@ generic module Msp432TimerP(uint32_t timer_ptr, uint32_t irqn, bool isAsync) {
     interface Msp432TimerEvent  as Overflow;
     interface HplMsp432TimerInt as TimerVec_0;
     interface HplMsp432TimerInt as TimerVec_N;
+    interface Panic;
   }
 }
 implementation {
 
 #define TAx ((Timer_A_Type *) timer_ptr)
+#define __PANIC_TIMING(where, w, x, y, z) do {                          \
+    call Panic.panic(PANIC_TIMING, where, w, x, y, z);                  \
+  } while (0)
 
   /*
    * now you may be wondering why the only thing initilized here is the
@@ -100,6 +119,11 @@ implementation {
    * any timer used doing startup, in inherently platform code.  So the
    * timers are started up when the main clocks are initialized.  And we
    * turn on the interrupt here which is inherently a cpu dependent thing.
+   * We enable the NVIC for both Timer vectors and turn on the wrap
+   * interrupt.  The assumption is something reasonable will happen when the
+   * interrupt occurs.  This is poor practice (its an assumption) and will
+   * change when Msp432Timing is written.  The unified Timing module that
+   * handles timers and working with timing helpers (like the RTC subsystem).
    *
    * That way this module stays platform independent and clocks and such are
    * initialized early on like they need to be.
@@ -109,12 +133,14 @@ implementation {
   command error_t Init.init() {
     NVIC_EnableIRQ(irqn);
     NVIC_EnableIRQ(irqn + 1);
+    call Timer.enableEvents();
     return SUCCESS;
   }
 
 
   async command uint16_t Timer.get() {
     uint16_t t0, t1;
+    uint32_t cnt;
 
     /*
      * WARNING: It is possible that the timer being referenced is being clocked
@@ -127,14 +153,25 @@ implementation {
      * This is a platform thing, and only needs to be done if the clock for
      * this timer is something other than a main cpu clock derived. ie.ACLK
      * when run from a 32KiHz watch crystal.
+     *
+     * how long does it take for an ACLK clock to propagate across the timer?
+     * Shouldn't take long.  But we've seen some strange behaviour.  Debugger?
      */
     if (isAsync) {
+      cnt = 0;
       atomic {
         t0 = TAx->R;
         t1 = TAx->R;
         if (t0 == t1)
           return t0;
-        do { t0 = t1; t1 = TAx->R; } while( t0 != t1 );
+        do {
+          t0 = t1;
+          t1 = TAx->R;
+          cnt++;
+          if (cnt > 10) {
+            __PANIC_TIMING(1, cnt, t0, t1, 0);
+          }
+        } while( t0 != t1 );
         return t1;
       }
     } else
@@ -234,4 +271,13 @@ implementation {
 
   default async event void Timer.overflow() { }
   default async event void Event.fired[uint8_t n]() { }
+
+  async event void Panic.hook() { }
+
+#ifndef REQUIRE_PANIC
+  default async command void Panic.panic(uint8_t pcode, uint8_t where, uint16_t arg0,
+					 uint16_t arg1, uint16_t arg2, uint16_t arg3) { }
+  default async command void  Panic.warn(uint8_t pcode, uint8_t where, uint16_t arg0,
+					 uint16_t arg1, uint16_t arg2, uint16_t arg3) { }
+#endif
 }
